@@ -1,0 +1,10 @@
+{
+  "hosted-zone:account=573446657092:domainName=morjoff.com:region=eu-central-1": {
+    "Id": "/hostedzone/Z1YNPBQKPA55T6",
+    "Name": "morjoff.com."
+  },
+  "hosted-zone:account=573446657092:domainName=morjoff.com:region=us-east-1": {
+    "Id": "/hostedzone/Z1YNPBQKPA55T6",
+    "Name": "morjoff.com."
+  }
+}
