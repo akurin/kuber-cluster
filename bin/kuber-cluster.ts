@@ -4,7 +4,7 @@ import * as cdk from '@aws-cdk/core';
 import {KuberClusterStack} from '../lib/kuber-cluster-stack';
 
 const app = new cdk.App();
-new KuberClusterStack(app, 'kuber-cluster', {
+new KuberClusterStack(app, 'kops-bucket', {
     env: {
         account: "573446657092",
         region: "us-east-1"
