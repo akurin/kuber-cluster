@@ -49,6 +49,7 @@ kops create cluster \
 
 kops create -f kuber.morjoff.com.yaml
 kops create secret --name kuber.morjoff.com sshpublickey admin -i ~/.ssh/id_rsa.pub
+kops update cluster kuber.morjoff.com --yes
 kops rolling-update cluster kuber.morjoff.com --yes
 ````
 
@@ -62,7 +63,7 @@ Suggestions:
 ## Install Kubernetes UI
 
 ```shell script
-kubectl create -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml
 
 kubectl apply -f dashboard/admin-user.yml
 
@@ -73,3 +74,7 @@ kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboar
 ```
 
 Go to http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
+
+```shell script```
+kubectl apply -f external-dns.yaml
+```
