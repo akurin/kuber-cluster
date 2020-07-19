@@ -1,6 +1,7 @@
 import * as cdk from '@aws-cdk/core';
+import {CfnOutput, RemovalPolicy} from '@aws-cdk/core';
 import {Bucket} from "@aws-cdk/aws-s3";
-import {CfnOutput, RemovalPolicy} from "@aws-cdk/core";
+import {Certificate, ValidationMethod} from "@aws-cdk/aws-certificatemanager";
 
 export class KuberClusterStack extends cdk.Stack {
     constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -12,5 +13,12 @@ export class KuberClusterStack extends cdk.Stack {
         });
 
         new CfnOutput(this, "KopsBucket", {value: kopsBucket.bucketName});
+
+        const certificate = new Certificate(this, "Certificate", {
+            domainName: "*.morjoff.com",
+            validationMethod: ValidationMethod.DNS
+        });
+
+        new CfnOutput(this, "WildcardCertificate", {value: certificate.certificateArn});
     }
 }
