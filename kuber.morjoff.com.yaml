@@ -10,7 +10,7 @@ spec:
     rbac: {}
   channel: stable
   cloudProvider: aws
-  configBase: s3://kops-bucket-kuberbucket85682820-6fi3hpx8tzw/kuber.morjoff.com
+  configBase: s3://kops-bucket-kuberbucket85682820-5bihcpw1fw6k/kuber.morjoff.com
   etcdClusters:
   - cpuRequest: 200m
     etcdMembers:
@@ -31,7 +31,7 @@ spec:
     anonymousAuth: false
   kubernetesApiAccess:
   - 0.0.0.0/0
-  kubernetesVersion: 1.17.8
+  kubernetesVersion: 1.17.9
   masterPublicName: api.kuber.morjoff.com
   networkCIDR: 172.20.0.0/16
   networking:
@@ -93,7 +93,6 @@ metadata:
 spec:
   image: kope.io/k8s-1.17-debian-stretch-amd64-hvm-ebs-2020-01-17
   machineType: t3a.micro
-  maxPrice: "0.0028"
   maxSize: 1
   minSize: 1
   nodeLabels:
@@ -115,8 +114,8 @@ spec:
   image: kope.io/k8s-1.17-debian-stretch-amd64-hvm-ebs-2020-01-17
   machineType: t3a.micro
   maxPrice: "0.0028"
-  maxSize: 2
-  minSize: 2
+  maxSize: 3
+  minSize: 0
   nodeLabels:
     kops.k8s.io/instancegroup: nodes
   role: Node
