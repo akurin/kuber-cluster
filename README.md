@@ -19,62 +19,20 @@ The `cdk.json` file tells the CDK Toolkit how to execute your app.
 cdk deploy --profile personal
 ```
 
-## Kops commands
+## K3S commands
 
 ```shell script
-export AWS_DEFAULT_PROFILE=personal
-export AWS_PROFILE=personal
-
-KOPS_STATE_STORE=s3://$(aws cloudformation describe-stacks \
+MASTER_NODE_PUBLIC_IP=$(aws cloudformation describe-stacks \
     --stack-name kops-bucket \
-    --query "Stacks[0].Outputs[?OutputKey=='KopsBucket'].OutputValue" \
-    --output text)
+    --query "Stacks[0].Outputs[?OutputKey=='MasterNodePublicIp'].OutputValue" \
+    --output text \
+    --profile personal)
 
-export KOPS_STATE_STORE
+K3S_CONN_STRING=$(aws ssm get-parameter \
+    --name K3SConnectionString \
+    --query "Parameter.Value" \
+    --output text \
+    --profile personal)
 
-kops create cluster \
---name kuber.morjoff.com \
---zones us-east-1a
---master-size t3a.nano \
---node-size t3a.nano
-
-# Create Kops template
-kops create cluster \
-    --name kuber.morjoff.com \
-    --zones us-east-1a \
-    --master-size t3a.nano \
-    --node-size t3a.nano \
-    --dry-run \
-    -o yaml > kuber.morjoff.com.yaml
-
-kops create -f kuber.morjoff.com.yaml
-kops create secret --name kuber.morjoff.com sshpublickey admin -i ~/.ssh/id_rsa.pub
-kops update cluster kuber.morjoff.com --yes
-kops rolling-update cluster kuber.morjoff.com --yes
-````
-
-Suggestions:
- * validate cluster: kops validate cluster
- * list nodes: kubectl get nodes --show-labels
- * ssh to the master: ssh -i ~/.ssh/id_rsa admin@api.kuber.morjoff.com
- * the admin user is specific to Debian. If not using Debian please use the appropriate user based on your OS.
- * read about installing addons at: https://github.com/kubernetes/kops/blob/master/docs/operations/addons.md.
-
-## Install Kubernetes UI
-
-```shell script
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml
-
-kubectl apply -f dashboard/admin-user.yml
-
-kubectl apply -f dashboard/role-binding.yml
-
-# Get token
-kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboard get secret | grep admin-user | awk '{print $1}')
-```
-
-Go to http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
-
-```shell script```
-kubectl apply -f external-dns.yaml
+k3sup install --ip $MASTER_NODE_PUBLIC_IP --user ec2-user --k3s-extra-args "--datastore-endpoint=$K3S_CONN_STRING"
 ```
