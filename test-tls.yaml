@@ -14,8 +14,8 @@ spec:
         app: k8s-bootcamp
     spec:
       containers:
-      - name: k8s-bootcamp
-        image: gcr.io/google-samples/kubernetes-bootcamp:v1
+        - name: k8s-bootcamp
+          image: gcr.io/google-samples/kubernetes-bootcamp:v1
 ---
 apiVersion: v1
 kind: Service
@@ -24,9 +24,9 @@ metadata:
   namespace: default
 spec:
   ports:
-  - name: http
-    targetPort: 8080
-    port: 80
+    - name: http
+      targetPort: 8080
+      port: 80
   selector:
     app: k8s-bootcamp
 ---
@@ -37,21 +37,30 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "traefik"
     cert-manager.io/cluster-issuer: letsencrypt-prod
+    traefik.ingress.kubernetes.io/redirect-entry-point: https
     # certmanager.io/issuer: "letsencrypt-prod"
     # certmanager.io/acme-challenge-type: http01
 
 spec:
   tls:
-  - hosts:
-    # Change this to your own hostname
-    - kuber.morjoff.com
-    secretName: letsencrypt-prod
+    - hosts:
+        # Change this to your own hostname
+        - kuber.morjoff.com
+        - rss.morjoff.com
+      secretName: letsencrypt-prod
   rules:
-  # Change this to your own hostname
-  - host: kuber.morjoff.com
-    http:
-      paths:
-      - path: /
-        backend:
-          serviceName: k8s-bootcamp
-          servicePort: http
+    # Change this to your own hostname
+    - host: kuber.morjoff.com
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: k8s-bootcamp
+              servicePort: http
+    - host: rss.morjoff.com
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: k8s-bootcamp
+              servicePort: http

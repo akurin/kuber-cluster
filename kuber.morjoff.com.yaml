@@ -6,6 +6,17 @@ metadata:
 spec:
   api:
     dns: {}
+  # kubeAPIServer:
+    # securePort: 6443
+  # kubeControllerManager:
+  #   master: https://127.0.0.1:6443
+  # kubeScheduler:
+  #   master: https://127.0.0.1:6443
+  # masterKubelet:
+  #   master: https://127.0.0.1:6443
+  # kubeProxy:
+  #   master: https://127.0.0.1:6443
+  # masterInternalName: ""
   authorization:
     rbac: {}
   channel: stable
