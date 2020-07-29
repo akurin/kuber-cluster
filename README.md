@@ -36,3 +36,24 @@ K3S_CONN_STRING=$(aws ssm get-parameter \
 
 k3sup install --ip $MASTER_NODE_PUBLIC_IP --user ec2-user --k3s-extra-args "--datastore-endpoint=$K3S_CONN_STRING"
 ```
+
+## Install Kubernetes UI
+
+```shell script
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.3/aio/deploy/recommended.yaml
+
+kubectl apply -f dashboard/admin-user.yml
+
+kubectl apply -f dashboard/role-binding.yml
+
+# Get token
+kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboard get secret | grep admin-user | awk '{print $1}')
+```
+Now access Dashboard at:
+http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/.
+
+# Install cert manager
+
+```shell script
+kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v0.16.0/cert-manager.yaml
+```
