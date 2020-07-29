@@ -6,5 +6,66 @@
   "hosted-zone:account=573446657092:domainName=morjoff.com:region=us-east-1": {
     "Id": "/hostedzone/Z1YNPBQKPA55T6",
     "Name": "morjoff.com."
-  }
+  },
+  "hosted-zone:account=573446657092:domainName=morjoff.com.:region=us-east-1": {
+    "Id": "/hostedzone/Z1YNPBQKPA55T6",
+    "Name": "morjoff.com."
+  },
+  "vpc-provider:account=573446657092:filter.isDefault=true:region=us-east-1:returnAsymmetricSubnets=true": {
+    "vpcId": "vpc-9a496ae0",
+    "vpcCidrBlock": "172.31.0.0/16",
+    "availabilityZones": [],
+    "subnetGroups": [
+      {
+        "name": "Public",
+        "type": "Public",
+        "subnets": [
+          {
+            "subnetId": "subnet-ee6d7a89",
+            "cidr": "172.31.0.0/20",
+            "availabilityZone": "us-east-1a",
+            "routeTableId": "rtb-57cc6229"
+          },
+          {
+            "subnetId": "subnet-038c9e2d",
+            "cidr": "172.31.80.0/20",
+            "availabilityZone": "us-east-1b",
+            "routeTableId": "rtb-57cc6229"
+          },
+          {
+            "subnetId": "subnet-5f53f412",
+            "cidr": "172.31.16.0/20",
+            "availabilityZone": "us-east-1c",
+            "routeTableId": "rtb-57cc6229"
+          },
+          {
+            "subnetId": "subnet-76e1f12a",
+            "cidr": "172.31.32.0/20",
+            "availabilityZone": "us-east-1d",
+            "routeTableId": "rtb-57cc6229"
+          },
+          {
+            "subnetId": "subnet-24c09b1a",
+            "cidr": "172.31.48.0/20",
+            "availabilityZone": "us-east-1e",
+            "routeTableId": "rtb-57cc6229"
+          },
+          {
+            "subnetId": "subnet-c10ac3cf",
+            "cidr": "172.31.64.0/20",
+            "availabilityZone": "us-east-1f",
+            "routeTableId": "rtb-57cc6229"
+          }
+        ]
+      }
+    ]
+  },
+  "availability-zones:account=573446657092:region=us-east-1": [
+    "us-east-1a",
+    "us-east-1b",
+    "us-east-1c",
+    "us-east-1d",
+    "us-east-1e",
+    "us-east-1f"
+  ]
 }
