@@ -17,6 +17,25 @@ spec:
         - name: k8s-bootcamp
           image: gcr.io/google-samples/kubernetes-bootcamp:v1
 ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echo
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: k8s-bootcamp
+  template:
+    metadata:
+      labels:
+        app: k8s-bootcamp
+    spec:
+      containers:
+        - name: echo
+          image: mendhak/http-https-echo
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -30,6 +49,19 @@ spec:
   selector:
     app: k8s-bootcamp
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: echo
+  namespace: default
+spec:
+  ports:
+    - name: http
+      targetPort: 80
+      port: 80
+  selector:
+    app: k8s-bootcamp
+---
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
@@ -38,9 +70,6 @@ metadata:
     kubernetes.io/ingress.class: "traefik"
     cert-manager.io/cluster-issuer: letsencrypt-prod
     traefik.ingress.kubernetes.io/redirect-entry-point: https
-    # certmanager.io/issuer: "letsencrypt-prod"
-    # certmanager.io/acme-challenge-type: http01
-
 spec:
   tls:
     - hosts:
@@ -62,5 +91,5 @@ spec:
         paths:
           - path: /
             backend:
-              serviceName: k8s-bootcamp
+              serviceName: echo
               servicePort: http
