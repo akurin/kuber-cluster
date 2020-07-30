@@ -23,7 +23,7 @@ cdk deploy --profile personal
 
 ```shell script
 MASTER_NODE_PUBLIC_IP=$(aws cloudformation describe-stacks \
-    --stack-name kops-bucket \
+    --stack-name kuber-cluster \
     --query "Stacks[0].Outputs[?OutputKey=='MasterNodePublicIp'].OutputValue" \
     --output text \
     --profile personal)
@@ -55,5 +55,5 @@ http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kube
 # Install cert manager
 
 ```shell script
-kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v0.16.0/cert-manager.yaml
+kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v0.16.0/cert-manager.yaml
 ```
