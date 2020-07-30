@@ -1,5 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-import {CfnOutput} from '@aws-cdk/core';
+import {CfnOutput, Duration} from '@aws-cdk/core';
 import {Certificate, ValidationMethod} from "@aws-cdk/aws-certificatemanager";
 import {
   AmazonLinuxGeneration,
@@ -23,12 +23,12 @@ export class KuberClusterStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const certificate = new Certificate(this, "Certificate", {
-      domainName: "*.morjoff.com",
-      validationMethod: ValidationMethod.DNS
-    });
+    // const certificate = new Certificate(this, "Certificate", {
+    //   domainName: "*.morjoff.com",
+    //   validationMethod: ValidationMethod.DNS
+    // });
 
-    new CfnOutput(this, "WildcardCertificate", {value: certificate.certificateArn});
+    // new CfnOutput(this, "WildcardCertificate", {value: certificate.certificateArn});
 
     const vpc = Vpc.fromLookup(this, "Vpc", {
       isDefault: true
@@ -51,6 +51,8 @@ export class KuberClusterStack extends cdk.Stack {
 
     masterSecurityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(22));
     masterSecurityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(6443));
+    masterSecurityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(80));
+    masterSecurityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(443));
 
     let userData = UserData.forLinux();
     userData.addCommands("sudo bash -c 'echo \"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC0QYZVIpXczWGxH8rJYZcVRKLyDFGvGTs5YCun/nMNlUfgXlWOUO5VJCbjHt1OKhWa8+SSAsoaWZ9USlZUQ1+zkdpK9+/beSLGxRX7q3Og0XfZC3Plt+zC/hu4bKEi4LPLIKVbP1+hkOXemnJdFR4m5gjt9lJMcVZ7hikpu3N0qvifVWu+UwKiUE0gHV1Khp9PWO0isZYQmJDtYQCVWYeqUCqZlcBcZyEYdIxtoXSDYcGNtL/bYAYwe8AMnuqDGAPX/1inw3nBl0mF2ST3EBW0vEaFHzg5okYUGXdAAKIJluM0k9dY1SFYwNcwg6TiMyykDFLGHuX+cYiF7SLHuDCy1Y3OOQi614IjOoSc5ZxOF5OIVpIuTtETogESgyEQzhkFhyVc2J57CVvvj/IIO6naAJ5Euo3Pn9zvmOqpV9w2O1lRMPS6Gy+UQoIKiSZyspH58maaSGYG2KVjW22SIfn43CRmot05fceayjDLyuLuu+pSsUjrZKlKn2C9zCp80aWRIi4AZBLfsupT783O+lTozMIccrTRtkh089pZj7SGZStMIwrAKlhffK7U6pxn8P7w7P3zPc0Vb6PxkYPIL1M0bftExKvp3v71ExMZ6AlVz/XOD0JOeFwdK6Q2wUuZOsFo67ylX5aedQNlJHickcVc8xavrx3aJiKMkJ+KIuzfyw== admin@morjoff.com\" > /home/ec2-user/.ssh/authorized_keys'")
@@ -67,11 +69,22 @@ export class KuberClusterStack extends cdk.Stack {
       value: instance.instancePublicIp
     })
 
-    new RecordSet(this, "RecordSet", {
-      zone: HostedZone.fromLookup(this, "HostedZoneLookup", {domainName: "morjoff.com"}),
+    const zone = HostedZone.fromLookup(this, "HostedZoneLookup", {domainName: "morjoff.com"});
+    const target = RecordTarget.fromIpAddresses(instance.instancePublicIp);
+
+    new RecordSet(this, "KuberRecordSet", {
+      zone: zone,
       recordType: RecordType.A,
       recordName: "kuber.morjoff.com",
-      target: RecordTarget.fromIpAddresses(instance.instancePublicIp)
+      target: target
+    });
+
+    new RecordSet(this, "RssRecordSet", {
+      zone: zone,
+      recordType: RecordType.A,
+      recordName: "rss.morjoff.com",
+      target: target,
+      ttl: Duration.minutes(1)
     });
 
     // Allow VPC incoming connections
