@@ -75,7 +75,7 @@ spec:
     - hosts:
         # Change this to your own hostname
         - kuber.morjoff.com
-        - rss.morjoff.com
+        # - rss.morjoff.com
       secretName: letsencrypt-prod
   rules:
     # Change this to your own hostname
@@ -86,10 +86,10 @@ spec:
             backend:
               serviceName: k8s-bootcamp
               servicePort: http
-    - host: rss.morjoff.com
-      http:
-        paths:
-          - path: /
-            backend:
-              serviceName: echo
-              servicePort: http
+    # - host: rss.morjoff.com
+    #   http:
+    #     paths:
+    #       - path: /
+    #         backend:
+    #           serviceName: echo
+    #           servicePort: http

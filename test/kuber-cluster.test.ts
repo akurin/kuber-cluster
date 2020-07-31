@@ -1,13 +1,22 @@
-import { expect as expectCDK, matchTemplate, MatchStyle } from '@aws-cdk/assert';
-import * as cdk from '@aws-cdk/core';
-import * as KuberCluster from '../lib/kuber-cluster-stack';
+import {
+  expect as expectCDK,
+  matchTemplate,
+  MatchStyle,
+} from "@aws-cdk/assert";
+import * as cdk from "@aws-cdk/core";
+import * as KuberCluster from "../lib/kuber-cluster-stack";
 
-test('Empty Stack', () => {
-    const app = new cdk.App();
-    // WHEN
-    const stack = new KuberCluster.KuberClusterStack(app, 'MyTestStack');
-    // THEN
-    expectCDK(stack).to(matchTemplate({
-      "Resources": {}
-    }, MatchStyle.EXACT))
+test("Empty Stack", () => {
+  const app = new cdk.App();
+  // WHEN
+  const stack = new KuberCluster.KuberClusterStack(app, "MyTestStack");
+  // THEN
+  expectCDK(stack).to(
+    matchTemplate(
+      {
+        Resources: {},
+      },
+      MatchStyle.EXACT
+    )
+  );
 });
