@@ -62,7 +62,8 @@ export class KuberClusterStack extends cdk.Stack {
       securityGroup: masterSecurityGroup,
       instanceType: InstanceType.of(InstanceClass.BURSTABLE3_AMD, InstanceSize.MICRO),
       machineImage: MachineImage.latestAmazonLinux({generation: AmazonLinuxGeneration.AMAZON_LINUX_2}),
-      userData: userData
+      userData: userData,
+      role: role
     });
 
     new CfnOutput(this, "MasterNodePublicIp", {
