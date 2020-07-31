@@ -1,6 +1,5 @@
 import * as cdk from "@aws-cdk/core";
 import { CfnOutput, Duration } from "@aws-cdk/core";
-import { Certificate, ValidationMethod } from "@aws-cdk/aws-certificatemanager";
 import {
   AmazonLinuxGeneration,
   Instance,
@@ -14,7 +13,13 @@ import {
   UserData,
   Vpc,
 } from "@aws-cdk/aws-ec2";
-import { ManagedPolicy, Role, ServicePrincipal } from "@aws-cdk/aws-iam";
+import {
+  Effect,
+  ManagedPolicy,
+  PolicyStatement,
+  Role,
+  ServicePrincipal,
+} from "@aws-cdk/aws-iam";
 import { CfnDBCluster } from "@aws-cdk/aws-rds";
 import { CfnParameter } from "@aws-cdk/aws-ssm";
 import {
@@ -44,10 +49,12 @@ export class KuberClusterStack extends cdk.Stack {
       assumedBy: new ServicePrincipal("ec2.amazonaws.com"),
     });
 
-    const ssmManagedInstance = ManagedPolicy.fromAwsManagedPolicyName(
-      "AmazonSSMManagedInstanceCore"
+    role.addManagedPolicy(
+      ManagedPolicy.fromAwsManagedPolicyName("AmazonSSMManagedInstanceCore")
     );
-    role.addManagedPolicy(ssmManagedInstance);
+    role.addManagedPolicy(
+      ManagedPolicy.fromAwsManagedPolicyName("CloudWatchAgentServerPolicy")
+    );
 
     const masterSecurityGroup = new SecurityGroup(this, "SecurityGroup", {
       vpc: vpc,
@@ -61,7 +68,11 @@ export class KuberClusterStack extends cdk.Stack {
 
     let userData = UserData.forLinux();
     userData.addCommands(
-      "sudo bash -c 'echo \"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC0QYZVIpXczWGxH8rJYZcVRKLyDFGvGTs5YCun/nMNlUfgXlWOUO5VJCbjHt1OKhWa8+SSAsoaWZ9USlZUQ1+zkdpK9+/beSLGxRX7q3Og0XfZC3Plt+zC/hu4bKEi4LPLIKVbP1+hkOXemnJdFR4m5gjt9lJMcVZ7hikpu3N0qvifVWu+UwKiUE0gHV1Khp9PWO0isZYQmJDtYQCVWYeqUCqZlcBcZyEYdIxtoXSDYcGNtL/bYAYwe8AMnuqDGAPX/1inw3nBl0mF2ST3EBW0vEaFHzg5okYUGXdAAKIJluM0k9dY1SFYwNcwg6TiMyykDFLGHuX+cYiF7SLHuDCy1Y3OOQi614IjOoSc5ZxOF5OIVpIuTtETogESgyEQzhkFhyVc2J57CVvvj/IIO6naAJ5Euo3Pn9zvmOqpV9w2O1lRMPS6Gy+UQoIKiSZyspH58maaSGYG2KVjW22SIfn43CRmot05fceayjDLyuLuu+pSsUjrZKlKn2C9zCp80aWRIi4AZBLfsupT783O+lTozMIccrTRtkh089pZj7SGZStMIwrAKlhffK7U6pxn8P7w7P3zPc0Vb6PxkYPIL1M0bftExKvp3v71ExMZ6AlVz/XOD0JOeFwdK6Q2wUuZOsFo67ylX5aedQNlJHickcVc8xavrx3aJiKMkJ+KIuzfyw== admin@morjoff.com\" > /home/ec2-user/.ssh/authorized_keys'"
+      "sudo bash -c 'echo \"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC0QYZVIpXczWGxH8rJYZcVRKLyDFGvGTs5YCun/nMNlUfgXlWOUO5VJCbjHt1OKhWa8+SSAsoaWZ9USlZUQ1+zkdpK9+/beSLGxRX7q3Og0XfZC3Plt+zC/hu4bKEi4LPLIKVbP1+hkOXemnJdFR4m5gjt9lJMcVZ7hikpu3N0qvifVWu+UwKiUE0gHV1Khp9PWO0isZYQmJDtYQCVWYeqUCqZlcBcZyEYdIxtoXSDYcGNtL/bYAYwe8AMnuqDGAPX/1inw3nBl0mF2ST3EBW0vEaFHzg5okYUGXdAAKIJluM0k9dY1SFYwNcwg6TiMyykDFLGHuX+cYiF7SLHuDCy1Y3OOQi614IjOoSc5ZxOF5OIVpIuTtETogESgyEQzhkFhyVc2J57CVvvj/IIO6naAJ5Euo3Pn9zvmOqpV9w2O1lRMPS6Gy+UQoIKiSZyspH58maaSGYG2KVjW22SIfn43CRmot05fceayjDLyuLuu+pSsUjrZKlKn2C9zCp80aWRIi4AZBLfsupT783O+lTozMIccrTRtkh089pZj7SGZStMIwrAKlhffK7U6pxn8P7w7P3zPc0Vb6PxkYPIL1M0bftExKvp3v71ExMZ6AlVz/XOD0JOeFwdK6Q2wUuZOsFo67ylX5aedQNlJHickcVc8xavrx3aJiKMkJ+KIuzfyw== admin@morjoff.com\" > /home/ec2-user/.ssh/authorized_keys'",
+      "sudo yum update -y",
+      "sudo yum install -y polkit awslogs",
+      "sudo systemctl start awslogsd",
+      "sudo systemctl enable awslogsd"
     );
 
     const instance = new Instance(this, "Instance", {
