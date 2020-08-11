@@ -67,29 +67,17 @@ kind: Ingress
 metadata:
   name: k8s-bootcamp
   annotations:
-    kubernetes.io/ingress.class: "traefik"
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    traefik.ingress.kubernetes.io/redirect-entry-point: https
 spec:
   tls:
     - hosts:
-        # Change this to your own hostname
-        - kuber.morjoff.com
-        # - rss.morjoff.com
+        - rss.morjoff.com
       secretName: letsencrypt-prod
   rules:
-    # Change this to your own hostname
-    - host: kuber.morjoff.com
+    - host: rss.morjoff.com
       http:
         paths:
           - path: /
             backend:
               serviceName: k8s-bootcamp
               servicePort: http
-    # - host: rss.morjoff.com
-    #   http:
-    #     paths:
-    #       - path: /
-    #         backend:
-    #           serviceName: echo
-    #           servicePort: http
