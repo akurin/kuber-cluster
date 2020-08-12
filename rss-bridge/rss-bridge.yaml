@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rss-bridge
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rss-bridge
+  template:
+    metadata:
+      labels:
+        app: rss-bridge
+    spec:
+      containers:
+        - name: rss-bridge
+          image: rssbridge/rss-bridge:latest
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rss-bridge
+  namespace: default
+spec:
+  ports:
+    - name: http
+      targetPort: 80
+      port: 80
+  selector:
+    app: rss-bridge
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: rss-bridge
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  tls:
+    - hosts:
+        - rss.morjoff.com
+      secretName: letsencrypt-prod
+  rules:
+    - host: rss.morjoff.com
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: rss-bridge
+              servicePort: http
